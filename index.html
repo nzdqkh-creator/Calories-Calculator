@@ -246,9 +246,10 @@
             font-weight: 600;
             color: #1e293b;
             font-size: 0.9rem;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
-        /* SUMME - STRENG UNTEREINANDER */
+        
+        /* WICHTIG: UNTEREINANDER */
         .sum-grid {
             display: flex;
             flex-direction: column;
@@ -258,7 +259,7 @@
             display: flex;
             justify-content: space-between;
             font-size: 0.85rem;
-            padding: 3px 0;
+            padding: 4px 0;
             border-bottom: 1px dashed #e2e8f0;
         }
         .sum-item:last-child {
@@ -266,7 +267,6 @@
         }
         .sum-item .nutri-label {
             color: #475569;
-            font-weight: 500;
         }
         .sum-item .nutri-value {
             font-weight: 700;
@@ -334,7 +334,6 @@
         <span id="reportText">0 Einträge · 0 kcal</span>
     </div>
 
-    <!-- SUMME - STRENG UNTEREINANDER -->
     <div class="sum-section">
         <div class="sum-title">🧾 Summe (alle getrackten)</div>
         <div id="sumGrid" class="sum-grid"></div>
@@ -484,11 +483,10 @@
             });
         }
 
-
-
+        // WICHTIG: NEUE renderSum() Funktion - UNTEREINANDER
         function renderSum() {
             if (trackedItems.length === 0) {
-                sumGrid.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:6px 0;">— keine Einträge —</div>`;
+                sumGrid.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:8px 0;">— keine Einträge —</div>`;
                 return;
             }
             const sum = { Energie: 0, Fat: 0, SFA: 0, Carb: 0, Sugar: 0, Fiber: 0, Protein: 0 };
@@ -513,7 +511,7 @@
                 { key: 'Protein', label: 'Protein', unit: 'g' }
             ];
             
-            // JEDER EINTRAG IN EINER EIGENEN ZEILE (UNTEREINANDER)
+            // JEDER EINTRAG IN EINER EIGENEN ZEILE
             let html = '';
             fields.forEach(f => {
                 const val = sum[f.key];
@@ -525,12 +523,6 @@
             });
             sumGrid.innerHTML = html;
         }
-
-
-
-
-
-        
 
         function updateTrackCount() {
             trackCount.textContent = trackedItems.length;
