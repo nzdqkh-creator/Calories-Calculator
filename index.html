@@ -484,6 +484,8 @@
             });
         }
 
+
+
         function renderSum() {
             if (trackedItems.length === 0) {
                 sumGrid.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:6px 0;">— keine Einträge —</div>`;
@@ -510,6 +512,8 @@
                 { key: 'Fiber', label: 'Fiber', unit: 'g' },
                 { key: 'Protein', label: 'Protein', unit: 'g' }
             ];
+            
+            // JEDER EINTRAG IN EINER EIGENEN ZEILE (UNTEREINANDER)
             let html = '';
             fields.forEach(f => {
                 const val = sum[f.key];
@@ -521,6 +525,12 @@
             });
             sumGrid.innerHTML = html;
         }
+
+
+
+
+
+        
 
         function updateTrackCount() {
             trackCount.textContent = trackedItems.length;
