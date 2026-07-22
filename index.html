@@ -182,6 +182,7 @@
             transform: scale(0.96);
         }
 
+        /* BERICHT - STRENG UNTEREINANDER */
         .bericht {
             background: #fef9c3;
             border-radius: 16px;
@@ -190,15 +191,19 @@
             font-size: 0.85rem;
             color: #854d0e;
             border: 1px solid #fde68a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             min-height: 48px;
-            height: 48px;
+            height: auto;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
         }
-        .bericht span:first-child {
+        .bericht .bericht-title {
             font-weight: 600;
+        }
+        .bericht .bericht-data {
+            font-weight: 400;
         }
 
         .track-header {
@@ -323,9 +328,10 @@
         <button class="btn btn-export" id="exportBtn">💾 Export</button>
     </div>
 
+    <!-- BERICHT - STRENG UNTEREINANDER -->
     <div class="bericht">
-        <span>📊 Bericht</span>
-        <span id="reportText">0 Einträge · 0 kcal</span>
+        <span class="bericht-title">📊 Bericht</span>
+        <span class="bericht-data" id="reportText">0 Einträge · 0 kcal</span>
     </div>
 
     <div class="sum-section">
@@ -650,7 +656,6 @@
     })();
 </script>
 
-<!-- ⬇️⬇️⬇️ SERVICE WORKER HIER EINFÜGEN ⬇️⬇️⬇️ -->
 <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
@@ -658,7 +663,6 @@
             .catch(err => console.log('Service Worker Fehler:', err));
     }
 </script>
-<!-- ⬆️⬆️⬆️ BIS HIER ⬆️⬆️⬆️ -->
 
 </body>
 </html>
