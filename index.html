@@ -685,5 +685,41 @@
     }
 </script>
 
+    <script>
+    // CACHE LÖSCHEN BUTTON
+    document.getElementById('clearCacheBtn').addEventListener('click', function() {
+        if (confirm('Cache leeren und Seite neu laden?')) {
+            // Service Worker deaktivieren
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+            }
+            
+            // Cache löschen
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            
+            // Session Storage löschen
+            sessionStorage.clear();
+            
+            // Local Storage löschen
+            localStorage.clear();
+            
+            // Seite neu laden mit Cache-ignorieren
+            location.reload(true);
+        }
+    });
+</script>
+
+    
+
 </body>
 </html>
