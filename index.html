@@ -182,7 +182,6 @@
             transform: scale(0.96);
         }
 
-        /* BERICHT - STRENG UNTEREINANDER */
         .bericht {
             background: #fef9c3;
             border-radius: 16px;
@@ -191,19 +190,15 @@
             font-size: 0.85rem;
             color: #854d0e;
             border: 1px solid #fde68a;
-            min-height: 48px;
-            height: auto;
-            flex-shrink: 0;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 2px;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 48px;
+            height: 48px;
+            flex-shrink: 0;
         }
-        .bericht .bericht-title {
+        .bericht span:first-child {
             font-weight: 600;
-        }
-        .bericht .bericht-data {
-            font-weight: 400;
         }
 
         .track-header {
@@ -243,29 +238,35 @@
             margin-bottom: 20px;
             margin-top: 12px;
             border: 1px solid #e2e8f0;
-            max-height: 180px;
-            height: 180px;
+            max-height: 220px;
+            height: auto;
             overflow-y: auto;
         }
         .sum-title {
             font-weight: 600;
             color: #1e293b;
             font-size: 0.9rem;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
+        /* SUMME - STRENG UNTEREINANDER */
         .sum-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 2px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
         }
         .sum-item {
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
-            padding: 2px 0;
+            font-size: 0.85rem;
+            padding: 3px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .sum-item:last-child {
+            border-bottom: none;
         }
         .sum-item .nutri-label {
             color: #475569;
+            font-weight: 500;
         }
         .sum-item .nutri-value {
             font-weight: 700;
@@ -328,12 +329,12 @@
         <button class="btn btn-export" id="exportBtn">💾 Export</button>
     </div>
 
-    <!-- BERICHT - STRENG UNTEREINANDER -->
     <div class="bericht">
-        <span class="bericht-title">📊 Bericht</span>
-        <span class="bericht-data" id="reportText">0 Einträge · 0 kcal</span>
+        <span>📊 Bericht</span>
+        <span id="reportText">0 Einträge · 0 kcal</span>
     </div>
 
+    <!-- SUMME - STRENG UNTEREINANDER -->
     <div class="sum-section">
         <div class="sum-title">🧾 Summe (alle getrackten)</div>
         <div id="sumGrid" class="sum-grid"></div>
@@ -485,7 +486,7 @@
 
         function renderSum() {
             if (trackedItems.length === 0) {
-                sumGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:6px 0;">— keine Einträge —</div>`;
+                sumGrid.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:6px 0;">— keine Einträge —</div>`;
                 return;
             }
             const sum = { Energie: 0, Fat: 0, SFA: 0, Carb: 0, Sugar: 0, Fiber: 0, Protein: 0 };
@@ -513,7 +514,10 @@
             fields.forEach(f => {
                 const val = sum[f.key];
                 const display = typeof val === 'number' ? val.toFixed(1) : '0.0';
-                html += `<div class="sum-item"><span class="nutri-label">${f.label}</span><span class="nutri-value">${display} ${f.unit}</span></div>`;
+                html += `<div class="sum-item">
+                    <span class="nutri-label">${f.label}</span>
+                    <span class="nutri-value">${display} ${f.unit}</span>
+                </div>`;
             });
             sumGrid.innerHTML = html;
         }
