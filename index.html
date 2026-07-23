@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Calorien Tracker · 2 Listen</title>
+    <title>Calorien Tracker</title>
+    
+    <!-- PWA META TAGS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CalTracker">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#3b82f6">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -249,7 +258,6 @@
             margin-bottom: 8px;
         }
         
-        /* WICHTIG: UNTEREINANDER */
         .sum-grid {
             display: flex;
             flex-direction: column;
@@ -304,26 +312,56 @@
             text-align: center;
             margin-top: 12px;
         }
+
+        #clearCacheBtn {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+            transition: 0.15s;
+        }
+        #clearCacheBtn:active {
+            transform: scale(0.96);
+            background: #dc2626;
+        }
+
+        .offline-badge {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .online-badge {
+            display: inline-block;
+            background: #22c55e;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
 <div class="phone">
-    <h1>🍽️ CalTracker <small>· 100g</small></h1>
+    <h1>
+        🍽️ CalTracker <small>· 100g</small>
+        <span id="statusBadge" class="online-badge">● Online</span>
+    </h1>
 
-        <!-- BUTTON ZUM LÖSCHEN DES CACHES -->
-    <button id="clearCacheBtn" style="
-        width: 100%;
-        padding: 8px 12px;
-        margin-bottom: 10px;
-        background: #ef4444;
-        color: white;
-        border: none;
-        border-radius: 40px;
-        font-weight: 600;
-        font-size: 0.8rem;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-    ">🗑️ Cache leeren & neu laden</button>
+    <button id="clearCacheBtn">🗑️ Cache leeren & neu laden</button>
 
     <div class="file-upload-wrapper" style="margin-bottom: 12px;">
         <input type="file" id="fileInput" accept=".xlsx, .xls">
@@ -365,7 +403,9 @@
     <div class="footnote">Menge in g · multipliziert & /100g · Summe über alle Einträge</div>
 </div>
 
+<!-- SheetJS - wird lokal gecacht -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
 <script>
     (function() {
         const DEFAULT_DATA = [
@@ -392,6 +432,21 @@
         const clearTrackBtn = document.getElementById('clearTrackBtn');
         const exportBtn = document.getElementById('exportBtn');
         const reportText = document.getElementById('reportText');
+        const statusBadge = document.getElementById('statusBadge');
+
+        // Online/Offline Status
+        function updateStatus() {
+            if (navigator.onLine) {
+                statusBadge.textContent = '● Online';
+                statusBadge.className = 'online-badge';
+            } else {
+                statusBadge.textContent = '● Offline';
+                statusBadge.className = 'offline-badge';
+            }
+        }
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+        updateStatus();
 
         function renderListbox1() {
             const filterText = filterInput.value.trim().toLowerCase();
@@ -467,6 +522,11 @@
             renderSum();
             updateTrackCount();
             updateReport();
+            
+            // Speichern in localStorage
+            try {
+                localStorage.setItem('trackedItems', JSON.stringify(trackedItems));
+            } catch(e) {}
         }
 
         function renderListbox2() {
@@ -493,12 +553,14 @@
                     renderSum();
                     updateTrackCount();
                     updateReport();
+                    try {
+                        localStorage.setItem('trackedItems', JSON.stringify(trackedItems));
+                    } catch(e) {}
                 });
                 listbox2.appendChild(li);
             });
         }
 
-        // WICHTIG: NEUE renderSum() Funktion - UNTEREINANDER
         function renderSum() {
             if (trackedItems.length === 0) {
                 sumGrid.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:8px 0;">— keine Einträge —</div>`;
@@ -526,7 +588,6 @@
                 { key: 'Protein', label: 'Protein', unit: 'g' }
             ];
             
-            // JEDER EINTRAG IN EINER EIGENEN ZEILE
             let html = '';
             fields.forEach(f => {
                 const val = sum[f.key];
@@ -560,6 +621,9 @@
                 renderSum();
                 updateTrackCount();
                 updateReport();
+                try {
+                    localStorage.removeItem('trackedItems');
+                } catch(e) {}
             }
         }
 
@@ -634,12 +698,26 @@
                     updateTrackCount();
                     updateReport();
                     filterInput.value = '';
+                    try {
+                        localStorage.removeItem('trackedItems');
+                    } catch(e) {}
                 } catch (err) {
                     alert('Fehler beim Lesen der Excel-Datei: ' + err.message);
                 }
             };
             reader.readAsArrayBuffer(file);
         }
+
+        // Daten aus localStorage laden
+        try {
+            const saved = localStorage.getItem('trackedItems');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    trackedItems = parsed;
+                }
+            }
+        } catch(e) {}
 
         filterInput.addEventListener('input', function() {
             if (selectedIndex >= 0) {
@@ -677,19 +755,10 @@
     })();
 </script>
 
+<!-- Cache löschen -->
 <script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('Service Worker registriert!'))
-            .catch(err => console.log('Service Worker Fehler:', err));
-    }
-</script>
-
-    <script>
-    // CACHE LÖSCHEN BUTTON
     document.getElementById('clearCacheBtn').addEventListener('click', function() {
         if (confirm('Cache leeren und Seite neu laden?')) {
-            // Service Worker deaktivieren
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(function(registrations) {
                     for(let registration of registrations) {
@@ -697,8 +766,6 @@
                     }
                 });
             }
-            
-            // Cache löschen
             if ('caches' in window) {
                 caches.keys().then(function(names) {
                     for (let name of names) {
@@ -706,20 +773,21 @@
                     }
                 });
             }
-            
-            // Session Storage löschen
             sessionStorage.clear();
-            
-            // Local Storage löschen
             localStorage.clear();
-            
-            // Seite neu laden mit Cache-ignorieren
             location.reload(true);
         }
     });
 </script>
 
-    
+<!-- Service Worker registrieren -->
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('✅ Service Worker registriert!'))
+            .catch(err => console.log('❌ Service Worker Fehler:', err));
+    }
+</script>
 
 </body>
 </html>
