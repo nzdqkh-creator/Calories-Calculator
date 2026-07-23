@@ -4,6 +4,7 @@ const FILES = [
     "./",
     "./index.html",
     "./manifest.json",
+    "./icon-192.png",
     "./xlsx.full.min.js"
 ];
 
@@ -14,10 +15,12 @@ self.addEventListener(
 
         event.waitUntil(
 
-            caches.open(CACHE_NAME)
-                .then(cache =>
+            caches
+            .open(CACHE_NAME)
+            .then(
+                cache =>
                     cache.addAll(FILES)
-                )
+            )
 
         );
 
@@ -33,24 +36,25 @@ self.addEventListener(
 
         event.waitUntil(
 
-            caches.keys()
-                .then(keys =>
+            caches
+            .keys()
+            .then(names =>
 
-                    Promise.all(
+                Promise.all(
 
-                        keys
-                            .filter(
-                                key =>
-                                key !== CACHE_NAME
-                            )
-                            .map(
-                                key =>
-                                caches.delete(key)
-                            )
-
+                    names
+                    .filter(
+                        name =>
+                            name !== CACHE_NAME
+                    )
+                    .map(
+                        name =>
+                            caches.delete(name)
                     )
 
                 )
+
+            )
 
         );
 
@@ -66,13 +70,14 @@ self.addEventListener(
 
         event.respondWith(
 
-            caches.match(event.request)
-                .then(response =>
+            caches
+            .match(event.request)
+            .then(cached =>
 
-                    response ||
-                    fetch(event.request)
+                cached ||
+                fetch(event.request)
 
-                )
+            )
 
         );
 
