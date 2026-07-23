@@ -1,792 +1,624 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Calorien Tracker</title>
-    
-    <!-- PWA META TAGS -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CalTracker">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="theme-color" content="#3b82f6">
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background: #f1f5f9;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 12px 10px 30px;
-        }
-        .phone {
-            max-width: 420px;
-            width: 100%;
-            background: white;
-            border-radius: 36px 36px 28px 28px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-            padding: 20px 16px 20px;
-        }
-        h1 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            color: #0f172a;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-        h1 small {
-            font-size: 0.8rem;
-            font-weight: 400;
-            color: #64748b;
-            margin-left: 4px;
-        }
-        .filter-area {
-            margin-bottom: 10px;
-        }
-        #filterInput {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 1rem;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 40px;
-            background: #f8fafc;
-            outline: none;
-            transition: 0.2s;
-        }
-        #filterInput:focus {
-            border-color: #3b82f6;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-        .list-container {
-            background: #f1f5f9;
-            border-radius: 24px;
-            padding: 4px 0;
-            margin: 8px 0 10px;
-            max-height: 180px;
-            height: 180px;
-            overflow-y: auto;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
-        }
-        #listbox1, #listbox2 {
-            list-style: none;
-            padding: 0 6px;
-            margin: 0;
-        }
-        #listbox1 li, #listbox2 li {
-            background: white;
-            margin: 5px 0;
-            padding: 10px 16px;
-            border-radius: 40px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #0f172a;
-            border: 1px solid transparent;
-            transition: 0.1s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-        #listbox1 li {
-            cursor: pointer;
-        }
-        #listbox1 li.selected {
-            border-color: #3b82f6;
-            background: #eff6ff;
-            box-shadow: 0 4px 8px rgba(59,130,246,0.08);
-        }
-        #listbox1 li:active {
-            transform: scale(0.97);
-        }
-        #listbox2 li {
-            cursor: default;
-        }
-        .food-name {
-            font-weight: 600;
-            color: #1e293b;
-        }
-        .food-kcal {
-            background: #e2e8f0;
-            padding: 2px 14px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #334155;
-        }
-        .food-menge {
-            background: #dbeafe;
-            padding: 2px 12px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: #1e4f8a;
-        }
+<title>Calorie Calculator</title>
 
-        .button-row {
-            display: flex;
-            gap: 10px;
-            margin: 8px 0 12px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            flex: 1;
-            min-width: 60px;
-            padding: 12px 6px;
-            border: none;
-            border-radius: 60px;
-            background: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #1e293b;
-            border: 1px solid #d1d9e6;
-            transition: 0.15s;
-            cursor: pointer;
-            text-align: center;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .btn-primary {
-            background: #3b82f6;
-            border: 1px solid #3b82f6;
-            color: white;
-            box-shadow: 0 4px 12px rgba(59,130,246,0.2);
-        }
-        .btn-primary:active {
-            background: #2563eb;
-            transform: scale(0.96);
-        }
-        .btn-danger {
-            background: #ef4444;
-            border: 1px solid #ef4444;
-            color: white;
-        }
-        .btn-danger:active {
-            background: #dc2626;
-            transform: scale(0.96);
-        }
-        .btn-export {
-            background: #8b5cf6;
-            border: 1px solid #8b5cf6;
-            color: white;
-        }
-        .btn-export:active {
-            background: #7c3aed;
-            transform: scale(0.96);
-        }
+<link rel="manifest" href="manifest.json">
 
-        .bericht {
-            background: #fef9c3;
-            border-radius: 16px;
-            padding: 10px 16px;
-            margin: 6px 0 10px;
-            font-size: 0.85rem;
-            color: #854d0e;
-            border: 1px solid #fde68a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            min-height: 48px;
-            height: 48px;
-            flex-shrink: 0;
-        }
-        .bericht span:first-child {
-            font-weight: 600;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        .track-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #1e293b;
-            padding: 0 4px;
-        }
-        .track-header span:first-child {
-            background: #dbeafe;
-            padding: 2px 14px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            color: #1e4f8a;
-        }
+body {
+    margin: 0;
+    padding: 15px;
+    font-family: system-ui, sans-serif;
+    background: #f1f5f9;
+}
 
-        .track-item-remove {
-            color: #94a3b8;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 0 4px;
-            font-weight: 300;
-        }
-        .track-item-remove:active {
-            color: #ef4444;
-        }
+.app {
+    max-width: 420px;
+    margin: auto;
+}
 
-        .sum-section {
-            background: #f1f5f9;
-            border-radius: 20px;
-            padding: 10px 14px;
-            margin-bottom: 20px;
-            margin-top: 12px;
-            border: 1px solid #e2e8f0;
-            max-height: 220px;
-            height: auto;
-            overflow-y: auto;
-        }
-        .sum-title {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-        
-        .sum-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-        .sum-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            padding: 4px 0;
-            border-bottom: 1px dashed #e2e8f0;
-        }
-        .sum-item:last-child {
-            border-bottom: none;
-        }
-        .sum-item .nutri-label {
-            color: #475569;
-        }
-        .sum-item .nutri-value {
-            font-weight: 700;
-            color: #0f172a;
-        }
+button,
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 0;
+    border-radius: 12px;
+    font-size: 16px;
+}
 
-        .file-upload-wrapper {
-            margin: 4px 0 2px;
-            display: flex;
-            gap: 8px;
-        }
-        #fileInput {
-            display: none;
-        }
-        .upload-label {
-            display: inline-block;
-            background: #eef2f6;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #1e293b;
-            border: 1px solid #d1d9e6;
-            cursor: pointer;
-            transition: 0.15s;
-            text-align: center;
-            flex: 1;
-        }
-        .upload-label:active {
-            background: #d9e1ec;
-        }
-        .footnote {
-            font-size: 0.65rem;
-            color: #94a3b8;
-            text-align: center;
-            margin-top: 12px;
-        }
+button {
+    background: #3b82f6;
+    color: white;
+    font-weight: bold;
+}
 
-        #clearCacheBtn {
-            width: 100%;
-            padding: 8px 12px;
-            margin-bottom: 10px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-            transition: 0.15s;
-        }
-        #clearCacheBtn:active {
-            transform: scale(0.96);
-            background: #dc2626;
-        }
+#clearCache {
+    background: #ef4444;
+}
 
-        .offline-badge {
-            display: inline-block;
-            background: #ef4444;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-        .online-badge {
-            display: inline-block;
-            background: #22c55e;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-    </style>
+.list {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.item:last-child {
+    border-bottom: 0;
+}
+
+.item:active {
+    background: #e5e7eb;
+}
+
+.report {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.tracked {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tracked-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+h1 {
+    font-size: 22px;
+}
+
+h2 {
+    font-size: 17px;
+}
+</style>
 </head>
+
 <body>
-<div class="phone">
-    <h1>
-        🍽️ CalTracker <small>· 100g</small>
-        <span id="statusBadge" class="online-badge">● Online</span>
-    </h1>
 
-    <button id="clearCacheBtn">🗑️ Cache leeren & neu laden</button>
+<div class="app">
 
-    <div class="file-upload-wrapper" style="margin-bottom: 12px;">
-        <input type="file" id="fileInput" accept=".xlsx, .xls">
-        <label for="fileInput" class="upload-label" id="uploadLabel">📂 Import (Excel)</label>
+<h1>Calorie Calculator</h1>
+
+<button id="importExcel">
+    Excel importieren
+</button>
+
+<input
+    type="file"
+    id="fileInput"
+    accept=".xlsx,.xls"
+    hidden
+>
+
+<input
+    type="text"
+    id="filter"
+    placeholder="Food suchen..."
+>
+
+<h2>Food</h2>
+
+<div class="list" id="foodList"></div>
+
+<div class="report">
+    <b>Bericht</b>
+    <div id="report">
+        0 Einträge · 0 kcal
     </div>
-
-    <div class="filter-area">
-        <input type="text" id="filterInput" placeholder="🔍 Lebensmittel filtern ..." autocomplete="off">
-    </div>
-
-    <div class="list-container">
-        <ul id="listbox1"></ul>
-    </div>
-
-    <div class="button-row">
-        <button class="btn btn-primary" id="trackBtn">▶ Track</button>
-        <button class="btn btn-danger" id="clearTrackBtn">🗑️ Clear</button>
-        <button class="btn btn-export" id="exportBtn">💾 Export</button>
-    </div>
-
-    <div class="bericht">
-        <span>📊 Bericht</span>
-        <span id="reportText">0 Einträge · 0 kcal</span>
-    </div>
-
-    <div class="sum-section">
-        <div class="sum-title">🧾 Summe (alle getrackten)</div>
-        <div id="sumGrid" class="sum-grid"></div>
-    </div>
-
-    <div class="track-header">
-        <span>📋 getrackte Einträge</span>
-        <span id="trackCount">0</span>
-    </div>
-    <div class="list-container" style="max-height:160px; margin:0 0 4px 0;">
-        <ul id="listbox2"></ul>
-    </div>
-
-    <div class="footnote">Menge in g · multipliziert & /100g · Summe über alle Einträge</div>
 </div>
 
-<!-- SheetJS - wird lokal gecacht -->
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<h2>Getrackt</h2>
+
+<div class="tracked" id="trackedList"></div>
+
+<br>
+
+<button id="clearCache">
+    Cache löschen
+</button>
+
+</div>
+
+
+<script src="xlsx.full.min.js"></script>
 
 <script>
-    (function() {
-        const DEFAULT_DATA = [
-            { ID: 1, Food: "Apfel", Energie: 52, Fat: 0.2, SFA: 0.0, Carb: 14, Sugar: 10, Fiber: 2.4, Protein: 0.3 },
-            { ID: 2, Food: "Banane", Energie: 89, Fat: 0.3, SFA: 0.1, Carb: 23, Sugar: 12, Fiber: 2.6, Protein: 1.1 },
-            { ID: 3, Food: "Vollkornbrot", Energie: 265, Fat: 4.2, SFA: 0.6, Carb: 43, Sugar: 5, Fiber: 7, Protein: 9 },
-            { ID: 4, Food: "Hähnchenbrust", Energie: 165, Fat: 3.6, SFA: 1.0, Carb: 0, Sugar: 0, Fiber: 0, Protein: 31 },
-            { ID: 5, Food: "Reis (gekocht)", Energie: 130, Fat: 0.3, SFA: 0.1, Carb: 28, Sugar: 0.1, Fiber: 0.4, Protein: 2.7 },
-            { ID: 6, Food: "Olivenöl", Energie: 884, Fat: 100, SFA: 13.8, Carb: 0, Sugar: 0, Fiber: 0, Protein: 0 }
-        ];
 
-        let foodData = [...DEFAULT_DATA];
-        let selectedIndex = -1;
-        let trackedItems = [];
-        let filteredItems = [];
+const defaultFood = [
 
-        const listbox1 = document.getElementById('listbox1');
-        const listbox2 = document.getElementById('listbox2');
-        const filterInput = document.getElementById('filterInput');
-        const trackBtn = document.getElementById('trackBtn');
-        const fileInput = document.getElementById('fileInput');
-        const sumGrid = document.getElementById('sumGrid');
-        const trackCount = document.getElementById('trackCount');
-        const clearTrackBtn = document.getElementById('clearTrackBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const reportText = document.getElementById('reportText');
-        const statusBadge = document.getElementById('statusBadge');
+{
+    Food: "Apfel",
+    Energie: 52,
+    Fat: 0.2,
+    Carb: 14,
+    Protein: 0.3
+},
 
-        // Online/Offline Status
-        function updateStatus() {
-            if (navigator.onLine) {
-                statusBadge.textContent = '● Online';
-                statusBadge.className = 'online-badge';
-            } else {
-                statusBadge.textContent = '● Offline';
-                statusBadge.className = 'offline-badge';
-            }
-        }
-        window.addEventListener('online', updateStatus);
-        window.addEventListener('offline', updateStatus);
-        updateStatus();
+{
+    Food: "Banane",
+    Energie: 89,
+    Fat: 0.3,
+    Carb: 23,
+    Protein: 1.1
+},
 
-        function renderListbox1() {
-            const filterText = filterInput.value.trim().toLowerCase();
-            filteredItems = foodData
-                .map((item, idx) => ({ item, idx }))
-                .filter(({ item }) => item.Food.toLowerCase().includes(filterText));
+{
+    Food: "Vollkornbrot",
+    Energie: 265,
+    Fat: 4.2,
+    Carb: 43,
+    Protein: 9
+},
 
-            listbox1.innerHTML = '';
-            if (filteredItems.length === 0) {
-                listbox1.innerHTML = `<li style="justify-content:center; color:#94a3b8; background:transparent; box-shadow:none; border:none;">Keine Einträge</li>`;
-                selectedIndex = -1;
-                return;
-            }
+{
+    Food: "Hähnchenbrust",
+    Energie: 165,
+    Fat: 3.6,
+    Carb: 0,
+    Protein: 31
+},
 
-            filteredItems.forEach(({ item, idx }, i) => {
-                const li = document.createElement('li');
-                li.dataset.index = i;
-                li.dataset.dataIdx = idx;
-                li.innerHTML = `<span class="food-name">${item.Food}</span><span class="food-kcal">${Math.round(item.Energie)} kcal</span>`;
-                if (i === selectedIndex) li.classList.add('selected');
-                li.addEventListener('click', function() {
-                    const newIdx = parseInt(this.dataset.index);
-                    selectedIndex = newIdx;
-                    document.querySelectorAll('#listbox1 li').forEach(el => el.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-                listbox1.appendChild(li);
-            });
+{
+    Food: "Reis",
+    Energie: 130,
+    Fat: 0.3,
+    Carb: 28,
+    Protein: 2.7
+},
 
-            if (selectedIndex >= filteredItems.length) selectedIndex = -1;
-            if (selectedIndex >= 0) {
-                document.querySelectorAll('#listbox1 li').forEach((el, idx) => {
-                    if (idx === selectedIndex) el.classList.add('selected');
-                });
-            }
-        }
+{
+    Food: "Olivenöl",
+    Energie: 884,
+    Fat: 100,
+    Carb: 0,
+    Protein: 0
+}
 
-        function trackSelected() {
-            if (selectedIndex === -1 || filteredItems.length === 0) {
-                alert('Bitte wähle zuerst ein Lebensmittel aus.');
-                return;
-            }
-            const dataIdx = filteredItems[selectedIndex].idx;
-            const row = foodData[dataIdx];
-            if (!row) { alert('Fehler'); return; }
+];
 
-            const mengeInput = prompt(`Menge in Gramm für „${row.Food}” (bezogen auf 100g):`, '100');
-            if (mengeInput === null) return;
-            let menge = parseFloat(mengeInput);
-            if (isNaN(menge) || menge <= 0) {
-                alert('Bitte eine gültige Zahl > 0 eingeben.');
-                return;
-            }
 
-            const faktor = menge / 100;
-            const calc = (val) => val * faktor;
+let food = [...defaultFood];
 
-            const trackedRow = {
-                Food: row.Food,
-                Menge: menge,
-                Energie: calc(row.Energie),
-                Fat: calc(row.Fat),
-                SFA: calc(row.SFA),
-                Carb: calc(row.Carb),
-                Sugar: calc(row.Sugar),
-                Fiber: calc(row.Fiber),
-                Protein: calc(row.Protein)
-            };
+let tracked = [];
 
-            trackedItems.push({ food: row.Food, menge, row: trackedRow });
+let selectedFood = null;
 
-            renderListbox2();
-            renderSum();
-            updateTrackCount();
-            updateReport();
-            
-            // Speichern in localStorage
-            try {
-                localStorage.setItem('trackedItems', JSON.stringify(trackedItems));
-            } catch(e) {}
-        }
 
-        function renderListbox2() {
-            listbox2.innerHTML = '';
-            if (trackedItems.length === 0) {
-                listbox2.innerHTML = `<li style="justify-content:center; color:#94a3b8; background:transparent; border:none; box-shadow:none; cursor:default;">Keine Einträge</li>`;
-                return;
-            }
-            trackedItems.forEach((item, idx) => {
-                const li = document.createElement('li');
-                li.style.cursor = 'default';
-                li.innerHTML = `
-                    <span class="food-name">${item.food}</span>
-                    <span style="display:flex; align-items:center; gap:6px;">
-                        <span class="food-menge">${item.menge}g</span>
-                        <button class="track-item-remove" data-idx="${idx}">✕</button>
-                    </span>
-                `;
-                li.querySelector('.track-item-remove').addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const index = parseInt(this.dataset.idx);
-                    trackedItems.splice(index, 1);
-                    renderListbox2();
-                    renderSum();
-                    updateTrackCount();
-                    updateReport();
-                    try {
-                        localStorage.setItem('trackedItems', JSON.stringify(trackedItems));
-                    } catch(e) {}
-                });
-                listbox2.appendChild(li);
-            });
-        }
+const foodList =
+    document.getElementById("foodList");
 
-        function renderSum() {
-            if (trackedItems.length === 0) {
-                sumGrid.innerHTML = `<div style="text-align:center; color:#94a3b8; padding:8px 0;">— keine Einträge —</div>`;
-                return;
-            }
-            const sum = { Energie: 0, Fat: 0, SFA: 0, Carb: 0, Sugar: 0, Fiber: 0, Protein: 0 };
-            trackedItems.forEach(item => {
-                const r = item.row;
-                sum.Energie += r.Energie || 0;
-                sum.Fat += r.Fat || 0;
-                sum.SFA += r.SFA || 0;
-                sum.Carb += r.Carb || 0;
-                sum.Sugar += r.Sugar || 0;
-                sum.Fiber += r.Fiber || 0;
-                sum.Protein += r.Protein || 0;
-            });
+const trackedList =
+    document.getElementById("trackedList");
 
-            const fields = [
-                { key: 'Energie', label: 'Energy', unit: 'kcal' },
-                { key: 'Fat', label: 'Fat', unit: 'g' },
-                { key: 'SFA', label: 'SFA', unit: 'g' },
-                { key: 'Carb', label: 'Carb', unit: 'g' },
-                { key: 'Sugar', label: 'Sugar', unit: 'g' },
-                { key: 'Fiber', label: 'Fiber', unit: 'g' },
-                { key: 'Protein', label: 'Protein', unit: 'g' }
-            ];
-            
-            let html = '';
-            fields.forEach(f => {
-                const val = sum[f.key];
-                const display = typeof val === 'number' ? val.toFixed(1) : '0.0';
-                html += `<div class="sum-item">
-                    <span class="nutri-label">${f.label}</span>
-                    <span class="nutri-value">${display} ${f.unit}</span>
-                </div>`;
-            });
-            sumGrid.innerHTML = html;
-        }
+const filter =
+    document.getElementById("filter");
 
-        function updateTrackCount() {
-            trackCount.textContent = trackedItems.length;
-        }
+const report =
+    document.getElementById("report");
 
-        function updateReport() {
-            const count = trackedItems.length;
-            let totalKcal = 0;
-            trackedItems.forEach(item => {
-                totalKcal += item.row.Energie || 0;
-            });
-            reportText.textContent = `${count} Einträge · ${Math.round(totalKcal)} kcal`;
-        }
+const fileInput =
+    document.getElementById("fileInput");
 
-        function clearTracked() {
-            if (trackedItems.length === 0) return;
-            if (confirm('Alle getrackten Einträge löschen?')) {
-                trackedItems = [];
-                renderListbox2();
-                renderSum();
-                updateTrackCount();
-                updateReport();
-                try {
-                    localStorage.removeItem('trackedItems');
-                } catch(e) {}
-            }
-        }
 
-        function exportData() {
-            if (foodData.length === 0) {
-                alert('Keine Daten zum Exportieren vorhanden.');
-                return;
-            }
-            const exportRows = foodData.map(item => ({
-                ID: item.ID || '',
-                Food: item.Food || '',
-                Energie: item.Energie || 0,
-                Fat: item.Fat || 0,
-                SFA: item.SFA || 0,
-                Carb: item.Carb || 0,
-                Sugar: item.Sugar || 0,
-                Fiber: item.Fiber || 0,
-                Protein: item.Protein || 0
-            }));
+/* -------------------------
+   FOOD LISTE
+------------------------- */
 
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(exportRows);
-            XLSX.utils.book_append_sheet(wb, ws, 'DMacros');
-            XLSX.writeFile(wb, 'DMacros.xlsx');
-        }
+function renderFood() {
 
-        function handleFileUpload(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(firstSheet);
+    const search =
+        filter.value.toLowerCase();
 
-                    if (!json || json.length === 0) {
-                        alert('Die Excel-Datei enthält keine Daten oder ist leer.');
-                        return;
-                    }
+    const result =
+        food.filter(x =>
+            String(x.Food)
+            .toLowerCase()
+            .includes(search)
+        );
 
-                    const newData = json.map((row, index) => {
-                        const getNum = (key) => {
-                            const val = row[key];
-                            if (typeof val === 'number') return val;
-                            if (typeof val === 'string') return parseFloat(val.replace(',', '.')) || 0;
-                            return 0;
-                        };
-                        return {
-                            ID: row.ID || row.id || index+1,
-                            Food: row.Food || row.food || row['Lebensmittel'] || 'Unbekannt',
-                            Energie: getNum('Energie') || getNum('energy') || 0,
-                            Fat: getNum('Fat') || getNum('fett') || 0,
-                            SFA: getNum('SFA') || getNum('sfa') || 0,
-                            Carb: getNum('Carb') || getNum('carb') || getNum('Kohlenhydrate') || 0,
-                            Sugar: getNum('Sugar') || getNum('sugar') || getNum('Zucker') || 0,
-                            Fiber: getNum('Fiber') || getNum('fiber') || getNum('Ballaststoffe') || 0,
-                            Protein: getNum('Protein') || getNum('protein') || 0
-                        };
-                    });
+    if (!result.length) {
 
-                    if (newData.length === 0) {
-                        alert('Keine gültigen Datenzeilen gefunden. Prüfe Spaltennamen.');
-                        return;
-                    }
+        foodList.innerHTML =
+            "<div class='item'>Keine Ergebnisse</div>";
 
-                    foodData = newData;
-                    selectedIndex = -1;
-                    trackedItems = [];
-                    renderListbox1();
-                    renderListbox2();
-                    renderSum();
-                    updateTrackCount();
-                    updateReport();
-                    filterInput.value = '';
-                    try {
-                        localStorage.removeItem('trackedItems');
-                    } catch(e) {}
-                } catch (err) {
-                    alert('Fehler beim Lesen der Excel-Datei: ' + err.message);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // Daten aus localStorage laden
-        try {
-            const saved = localStorage.getItem('trackedItems');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    trackedItems = parsed;
-                }
-            }
-        } catch(e) {}
-
-        filterInput.addEventListener('input', function() {
-            if (selectedIndex >= 0) {
-                const dataIdx = filteredItems[selectedIndex]?.idx;
-                if (dataIdx !== undefined) {
-                    const stillExists = filteredItems.some(({ idx }) => idx === dataIdx);
-                    if (!stillExists) selectedIndex = -1;
-                } else {
-                    selectedIndex = -1;
-                }
-            }
-            renderListbox1();
-        });
-
-        trackBtn.addEventListener('click', trackSelected);
-        clearTrackBtn.addEventListener('click', clearTracked);
-        exportBtn.addEventListener('click', exportData);
-
-        document.getElementById('uploadLabel').addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', function(e) {
-            if (this.files && this.files.length > 0) {
-                handleFileUpload(this.files[0]);
-                this.value = '';
-            }
-        });
-
-        renderListbox1();
-        renderListbox2();
-        renderSum();
-        updateTrackCount();
-        updateReport();
-    })();
-</script>
-
-<!-- Cache löschen -->
-<script>
-    document.getElementById('clearCacheBtn').addEventListener('click', function() {
-        if (confirm('Cache leeren und Seite neu laden?')) {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                    for(let registration of registrations) {
-                        registration.unregister();
-                    }
-                });
-            }
-            if ('caches' in window) {
-                caches.keys().then(function(names) {
-                    for (let name of names) {
-                        caches.delete(name);
-                    }
-                });
-            }
-            sessionStorage.clear();
-            localStorage.clear();
-            location.reload(true);
-        }
-    });
-</script>
-
-<!-- Service Worker registrieren -->
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('✅ Service Worker registriert!'))
-            .catch(err => console.log('❌ Service Worker Fehler:', err));
+        return;
     }
+
+
+    foodList.innerHTML =
+        result.map((x, i) => `
+
+        <div
+            class="item"
+            data-index="${i}"
+        >
+            <b>${x.Food}</b>
+            <br>
+            ${x.Energie} kcal / 100 g
+        </div>
+
+        `).join("");
+
+
+    document
+        .querySelectorAll(".item[data-index]")
+        .forEach(item => {
+
+            item.onclick = () => {
+
+                const index =
+                    Number(item.dataset.index);
+
+                selectedFood =
+                    result[index];
+
+                trackFood();
+
+            };
+
+        });
+
+}
+
+
+/* -------------------------
+   FOOD TRACKEN
+------------------------- */
+
+function trackFood() {
+
+    if (!selectedFood)
+        return;
+
+
+    const amount =
+        prompt(
+            "Menge in Gramm:",
+            "100"
+        );
+
+
+    if (amount === null)
+        return;
+
+
+    const grams =
+        Number(amount);
+
+
+    if (!grams || grams <= 0)
+        return;
+
+
+    const factor =
+        grams / 100;
+
+
+    tracked.push({
+
+        Food:
+            selectedFood.Food,
+
+        Menge:
+            grams,
+
+        kcal:
+            selectedFood.Energie *
+            factor,
+
+        Fat:
+            selectedFood.Fat *
+            factor,
+
+        Carb:
+            selectedFood.Carb *
+            factor,
+
+        Protein:
+            selectedFood.Protein *
+            factor
+
+    });
+
+
+    save();
+
+    renderTracked();
+
+}
+
+
+/* -------------------------
+   GETRACKTE FOOD
+------------------------- */
+
+function renderTracked() {
+
+    if (!tracked.length) {
+
+        trackedList.innerHTML =
+            "<div class='tracked-item'>Keine Einträge</div>";
+
+        updateReport();
+
+        return;
+    }
+
+
+    trackedList.innerHTML =
+
+        tracked.map((x, i) => `
+
+        <div class="tracked-item">
+
+            <span>
+                ${x.Food}
+                <br>
+                ${x.Menge} g
+            </span>
+
+            <span>
+
+                ${Math.round(x.kcal)} kcal
+
+                <button
+                    onclick="removeFood(${i})"
+                    style="
+                    width:auto;
+                    padding:5px 10px;
+                    margin-left:8px;
+                    background:#ef4444;
+                    "
+                >
+                    X
+                </button>
+
+            </span>
+
+        </div>
+
+        `).join("");
+
+
+    updateReport();
+
+}
+
+
+/* -------------------------
+   FOOD LÖSCHEN
+------------------------- */
+
+function removeFood(index) {
+
+    tracked.splice(index, 1);
+
+    save();
+
+    renderTracked();
+
+}
+
+
+/* -------------------------
+   BERICHT
+------------------------- */
+
+function updateReport() {
+
+    let kcal = 0;
+
+    tracked.forEach(x => {
+
+        kcal += x.kcal;
+
+    });
+
+
+    report.innerHTML =
+
+        tracked.length +
+        " Einträge · " +
+        Math.round(kcal) +
+        " kcal";
+
+}
+
+
+/* -------------------------
+   EXCEL IMPORT
+------------------------- */
+
+document
+.getElementById("importExcel")
+.onclick = () => {
+
+    fileInput.click();
+
+};
+
+
+fileInput.onchange = function () {
+
+    const file =
+        this.files[0];
+
+    if (!file)
+        return;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = function(e) {
+
+        const workbook =
+            XLSX.read(
+                new Uint8Array(
+                    e.target.result
+                ),
+                {
+                    type: "array"
+                }
+            );
+
+
+        const sheet =
+            workbook.Sheets[
+                workbook.SheetNames[0]
+            ];
+
+
+        food =
+            XLSX.utils.sheet_to_json(
+                sheet
+            );
+
+
+        localStorage.setItem(
+            "food",
+            JSON.stringify(food)
+        );
+
+
+        renderFood();
+
+    };
+
+
+    reader.readAsArrayBuffer(file);
+
+};
+
+
+/* -------------------------
+   SUCHE
+------------------------- */
+
+filter.oninput =
+    renderFood;
+
+
+/* -------------------------
+   SPEICHERN
+------------------------- */
+
+function save() {
+
+    localStorage.setItem(
+        "tracked",
+        JSON.stringify(tracked)
+    );
+
+}
+
+
+/* -------------------------
+   DATEN LADEN
+------------------------- */
+
+try {
+
+    const savedFood =
+        localStorage.getItem("food");
+
+    if (savedFood) {
+
+        food =
+            JSON.parse(savedFood);
+
+    }
+
+
+    const savedTracked =
+        localStorage.getItem("tracked");
+
+    if (savedTracked) {
+
+        tracked =
+            JSON.parse(savedTracked);
+
+    }
+
+}
+catch(e) {}
+
+
+/* -------------------------
+   CACHE LÖSCHEN
+------------------------- */
+
+document
+.getElementById("clearCache")
+.onclick = async () => {
+
+    localStorage.clear();
+
+
+    if ("caches" in window) {
+
+        const cachesList =
+            await caches.keys();
+
+        for (const cache of cachesList) {
+
+            await caches.delete(cache);
+
+        }
+
+    }
+
+
+    location.reload();
+
+};
+
+
+/* -------------------------
+   START
+------------------------- */
+
+renderFood();
+
+renderTracked();
+
+
+/* -------------------------
+   SERVICE WORKER
+------------------------- */
+
+if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker.register(
+        "sw.js"
+    );
+
+}
+
 </script>
 
 </body>
