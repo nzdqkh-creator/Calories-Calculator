@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <title>Calorie Calculator</title>
 
@@ -11,12 +11,12 @@
 <style>
 * {
     box-sizing: border-box;
+    font-family: system-ui;
 }
 
 body {
     margin: 0;
     padding: 15px;
-    font-family: system-ui, sans-serif;
     background: #f1f5f9;
 }
 
@@ -28,8 +28,8 @@ body {
 button,
 input {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 8px;
+    padding: 13px;
+    margin-bottom: 10px;
     border: 0;
     border-radius: 12px;
     font-size: 16px;
@@ -38,22 +38,26 @@ input {
 button {
     background: #3b82f6;
     color: white;
-    font-weight: bold;
+    font-weight: 600;
 }
 
-#clearCache {
+.clear {
     background: #ef4444;
+}
+
+input {
+    background: white;
 }
 
 .list {
     background: white;
     border-radius: 12px;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .item {
-    padding: 12px;
+    padding: 13px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
 }
@@ -62,36 +66,31 @@ button {
     border-bottom: 0;
 }
 
-.item:active {
-    background: #e5e7eb;
+.section {
+    margin-top: 20px;
+    font-weight: 700;
 }
 
-.report {
-    background: white;
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 10px;
+.macro {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
 }
 
 .tracked {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.tracked-item {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
 }
 
-h1 {
-    font-size: 22px;
-}
-
-h2 {
-    font-size: 17px;
+.delete {
+    width: auto;
+    padding: 3px 8px;
+    margin: 0;
+    background: none;
+    color: #ef4444;
 }
 </style>
 </head>
@@ -100,433 +99,314 @@ h2 {
 
 <div class="app">
 
-<h1>Calorie Calculator</h1>
+    <button id="importBtn">
+        Import Excel
+    </button>
 
-<button id="importExcel">
-    Excel importieren
-</button>
+    <input
+        type="file"
+        id="fileInput"
+        accept=".xlsx,.xls"
+        hidden
+    >
 
-<input
-    type="file"
-    id="fileInput"
-    accept=".xlsx,.xls"
-    hidden
->
+    <input
+        type="text"
+        id="filter"
+        placeholder="Food suchen..."
+    >
 
-<input
-    type="text"
-    id="filter"
-    placeholder="Food suchen..."
->
+    <div id="foodList" class="list"></div>
 
-<h2>Food</h2>
-
-<div class="list" id="foodList"></div>
-
-<div class="report">
-    <b>Bericht</b>
-    <div id="report">
-        0 Einträge · 0 kcal
+    <div class="section">
+        Macros
     </div>
+
+    <div id="macros"></div>
+
+    <div class="section">
+        Getrackt
+    </div>
+
+    <div id="tracked"></div>
+
+    <button id="clearBtn" class="clear">
+        Alle löschen
+    </button>
+
 </div>
-
-<h2>Getrackt</h2>
-
-<div class="tracked" id="trackedList"></div>
-
-<br>
-
-<button id="clearCache">
-    Cache löschen
-</button>
-
-</div>
-
 
 <script src="xlsx.full.min.js"></script>
 
 <script>
 
 const defaultFood = [
-
-{
-    Food: "Apfel",
-    Energie: 52,
-    Fat: 0.2,
-    Carb: 14,
-    Protein: 0.3
-},
-
-{
-    Food: "Banane",
-    Energie: 89,
-    Fat: 0.3,
-    Carb: 23,
-    Protein: 1.1
-},
-
-{
-    Food: "Vollkornbrot",
-    Energie: 265,
-    Fat: 4.2,
-    Carb: 43,
-    Protein: 9
-},
-
-{
-    Food: "Hähnchenbrust",
-    Energie: 165,
-    Fat: 3.6,
-    Carb: 0,
-    Protein: 31
-},
-
-{
-    Food: "Reis",
-    Energie: 130,
-    Fat: 0.3,
-    Carb: 28,
-    Protein: 2.7
-},
-
-{
-    Food: "Olivenöl",
-    Energie: 884,
-    Fat: 100,
-    Carb: 0,
-    Protein: 0
-}
-
+    {
+        Food: "Apfel",
+        Energy: 52,
+        Fat: 0.2,
+        SFA: 0,
+        Carb: 14,
+        Sugar: 10,
+        Fiber: 2.4,
+        Protein: 0.3
+    },
+    {
+        Food: "Banane",
+        Energy: 89,
+        Fat: 0.3,
+        SFA: 0.1,
+        Carb: 23,
+        Sugar: 12,
+        Fiber: 2.6,
+        Protein: 1.1
+    },
+    {
+        Food: "Vollkornbrot",
+        Energy: 265,
+        Fat: 4.2,
+        SFA: 0.6,
+        Carb: 43,
+        Sugar: 5,
+        Fiber: 7,
+        Protein: 9
+    },
+    {
+        Food: "Hähnchenbrust",
+        Energy: 165,
+        Fat: 3.6,
+        SFA: 1,
+        Carb: 0,
+        Sugar: 0,
+        Fiber: 0,
+        Protein: 31
+    }
 ];
 
+let food = defaultFood;
+let tracked = JSON.parse(
+    localStorage.getItem("tracked") || "[]"
+);
 
-let food = [...defaultFood];
-
-let tracked = [];
-
-let selectedFood = null;
-
-
-const foodList =
-    document.getElementById("foodList");
-
-const trackedList =
-    document.getElementById("trackedList");
-
-const filter =
-    document.getElementById("filter");
-
-const report =
-    document.getElementById("report");
-
-const fileInput =
-    document.getElementById("fileInput");
+const filter = document.getElementById("filter");
+const foodList = document.getElementById("foodList");
+const macros = document.getElementById("macros");
+const trackedList = document.getElementById("tracked");
 
 
-/* -------------------------
-   FOOD LISTE
-------------------------- */
-
+// FOOD LISTE
 function renderFood() {
 
-    const search =
-        filter.value.toLowerCase();
+    const search = filter.value.toLowerCase();
 
-    const result =
-        food.filter(x =>
-            String(x.Food)
-            .toLowerCase()
-            .includes(search)
-        );
+    const result = food.filter(x =>
+        String(x.Food)
+        .toLowerCase()
+        .includes(search)
+    );
 
-    if (!result.length) {
+    foodList.innerHTML = result.map((x, i) => `
+        <div class="item"
+             onclick="trackFood(${food.indexOf(x)})">
 
-        foodList.innerHTML =
-            "<div class='item'>Keine Ergebnisse</div>";
+            ${x.Food}
 
-        return;
-    }
-
-
-    foodList.innerHTML =
-        result.map((x, i) => `
-
-        <div
-            class="item"
-            data-index="${i}"
-        >
-            <b>${x.Food}</b>
-            <br>
-            ${x.Energie} kcal / 100 g
         </div>
-
-        `).join("");
-
-
-    document
-        .querySelectorAll(".item[data-index]")
-        .forEach(item => {
-
-            item.onclick = () => {
-
-                const index =
-                    Number(item.dataset.index);
-
-                selectedFood =
-                    result[index];
-
-                trackFood();
-
-            };
-
-        });
+    `).join("");
 
 }
 
 
-/* -------------------------
-   FOOD TRACKEN
-------------------------- */
+// FOOD TRACKEN
+function trackFood(index) {
 
-function trackFood() {
+    const item = food[index];
 
-    if (!selectedFood)
-        return;
+    const amount = prompt(
+        "Menge in Gramm:",
+        "100"
+    );
 
+    if (!amount) return;
 
-    const amount =
-        prompt(
-            "Menge in Gramm:",
-            "100"
-        );
+    const grams = Number(amount);
 
+    if (!grams || grams <= 0) return;
 
-    if (amount === null)
-        return;
-
-
-    const grams =
-        Number(amount);
-
-
-    if (!grams || grams <= 0)
-        return;
-
-
-    const factor =
-        grams / 100;
-
+    const factor = grams / 100;
 
     tracked.push({
 
-        Food:
-            selectedFood.Food,
+        Food: item.Food,
 
-        Menge:
-            grams,
+        Amount: grams,
 
-        kcal:
-            selectedFood.Energie *
-            factor,
-
-        Fat:
-            selectedFood.Fat *
-            factor,
-
-        Carb:
-            selectedFood.Carb *
-            factor,
-
-        Protein:
-            selectedFood.Protein *
-            factor
+        Energy: item.Energy * factor,
+        Fat: item.Fat * factor,
+        SFA: item.SFA * factor,
+        Carb: item.Carb * factor,
+        Sugar: item.Sugar * factor,
+        Fiber: item.Fiber * factor,
+        Protein: item.Protein * factor
 
     });
-
 
     save();
 
     renderTracked();
+    renderMacros();
+}
+
+
+// MACROS
+function renderMacros() {
+
+    const total = {
+
+        Energy: 0,
+        Fat: 0,
+        SFA: 0,
+        Carb: 0,
+        Sugar: 0,
+        Fiber: 0,
+        Protein: 0
+
+    };
+
+    tracked.forEach(x => {
+
+        Object.keys(total).forEach(key => {
+
+            total[key] += Number(x[key]) || 0;
+
+        });
+
+    });
+
+    macros.innerHTML = Object.entries(total)
+        .map(([key, value]) => `
+
+            <div class="macro">
+
+                <span>${key}</span>
+
+                <span>
+                    ${value.toFixed(1)}
+                    ${key === "Energy" ? "kcal" : "g"}
+                </span>
+
+            </div>
+
+        `)
+        .join("");
 
 }
 
 
-/* -------------------------
-   GETRACKTE FOOD
-------------------------- */
-
+// GETRACKTE FOODS
 function renderTracked() {
 
-    if (!tracked.length) {
+    trackedList.innerHTML = tracked.map((x, i) => `
 
-        trackedList.innerHTML =
-            "<div class='tracked-item'>Keine Einträge</div>";
-
-        updateReport();
-
-        return;
-    }
-
-
-    trackedList.innerHTML =
-
-        tracked.map((x, i) => `
-
-        <div class="tracked-item">
+        <div class="tracked">
 
             <span>
                 ${x.Food}
-                <br>
-                ${x.Menge} g
+                (${x.Amount} g)
             </span>
 
-            <span>
-
-                ${Math.round(x.kcal)} kcal
-
-                <button
-                    onclick="removeFood(${i})"
-                    style="
-                    width:auto;
-                    padding:5px 10px;
-                    margin-left:8px;
-                    background:#ef4444;
-                    "
-                >
-                    X
-                </button>
-
-            </span>
+            <button
+                class="delete"
+                onclick="removeTracked(${i})">
+                ✕
+            </button>
 
         </div>
 
-        `).join("");
-
-
-    updateReport();
+    `).join("");
 
 }
 
 
-/* -------------------------
-   FOOD LÖSCHEN
-------------------------- */
-
-function removeFood(index) {
+// EINZELNES FOOD LÖSCHEN
+function removeTracked(index) {
 
     tracked.splice(index, 1);
 
     save();
 
     renderTracked();
+    renderMacros();
 
 }
 
 
-/* -------------------------
-   BERICHT
-------------------------- */
+// ALLES LÖSCHEN
+document.getElementById("clearBtn")
+.onclick = function() {
 
-function updateReport() {
+    if (confirm("Alle getrackten Foods löschen?")) {
 
-    let kcal = 0;
+        tracked = [];
 
-    tracked.forEach(x => {
+        save();
 
-        kcal += x.kcal;
+        renderTracked();
+        renderMacros();
 
-    });
-
-
-    report.innerHTML =
-
-        tracked.length +
-        " Einträge · " +
-        Math.round(kcal) +
-        " kcal";
-
-}
-
-
-/* -------------------------
-   EXCEL IMPORT
-------------------------- */
-
-document
-.getElementById("importExcel")
-.onclick = () => {
-
-    fileInput.click();
+    }
 
 };
 
 
-fileInput.onchange = function () {
+// EXCEL IMPORT
+document.getElementById("importBtn")
+.onclick = function() {
 
-    const file =
-        this.files[0];
+    document
+        .getElementById("fileInput")
+        .click();
 
-    if (!file)
-        return;
+};
 
 
-    const reader =
-        new FileReader();
+document.getElementById("fileInput")
+.onchange = function(event) {
 
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
 
     reader.onload = function(e) {
 
-        const workbook =
-            XLSX.read(
-                new Uint8Array(
-                    e.target.result
-                ),
-                {
-                    type: "array"
-                }
-            );
-
+        const workbook = XLSX.read(
+            e.target.result,
+            { type: "array" }
+        );
 
         const sheet =
             workbook.Sheets[
                 workbook.SheetNames[0]
             ];
 
-
-        food =
-            XLSX.utils.sheet_to_json(
-                sheet
-            );
-
-
-        localStorage.setItem(
-            "food",
-            JSON.stringify(food)
-        );
-
+        food = XLSX.utils.sheet_to_json(sheet);
 
         renderFood();
 
     };
-
 
     reader.readAsArrayBuffer(file);
 
 };
 
 
-/* -------------------------
-   SUCHE
-------------------------- */
-
-filter.oninput =
-    renderFood;
+// FILTER
+filter.oninput = renderFood;
 
 
-/* -------------------------
-   SPEICHERN
-------------------------- */
-
+// SPEICHERN
 function save() {
 
     localStorage.setItem(
@@ -537,84 +417,19 @@ function save() {
 }
 
 
-/* -------------------------
-   DATEN LADEN
-------------------------- */
-
-try {
-
-    const savedFood =
-        localStorage.getItem("food");
-
-    if (savedFood) {
-
-        food =
-            JSON.parse(savedFood);
-
-    }
-
-
-    const savedTracked =
-        localStorage.getItem("tracked");
-
-    if (savedTracked) {
-
-        tracked =
-            JSON.parse(savedTracked);
-
-    }
-
-}
-catch(e) {}
-
-
-/* -------------------------
-   CACHE LÖSCHEN
-------------------------- */
-
-document
-.getElementById("clearCache")
-.onclick = async () => {
-
-    localStorage.clear();
-
-
-    if ("caches" in window) {
-
-        const cachesList =
-            await caches.keys();
-
-        for (const cache of cachesList) {
-
-            await caches.delete(cache);
-
-        }
-
-    }
-
-
-    location.reload();
-
-};
-
-
-/* -------------------------
-   START
-------------------------- */
-
+// START
 renderFood();
-
 renderTracked();
+renderMacros();
 
+</script>
 
-/* -------------------------
-   SERVICE WORKER
-------------------------- */
+<script>
 
 if ("serviceWorker" in navigator) {
 
     navigator.serviceWorker.register(
-        "sw.js"
+        "./sw.js"
     );
 
 }
