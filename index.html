@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
 
 <title>Calorie Calculator</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#3b82f6">
+
+<meta
+    name="theme-color"
+    content="#3b82f6"
+>
 
 <style>
+
+/* =========================
+   BASIC
+========================= */
 
 * {
     box-sizing: border-box;
@@ -23,6 +37,7 @@ body {
 }
 
 .app {
+    width: 100%;
     max-width: 420px;
     margin: auto;
     background: white;
@@ -31,127 +46,278 @@ body {
 }
 
 h1 {
-    margin: 0 0 12px;
+    margin: 0 0 16px 0;
     font-size: 22px;
 }
 
-/* Buttons */
 
-button,
-.upload {
-    width: 100%;
-    padding: 12px;
-    border: 0;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-}
+/* =========================
+   EXCEL IMPORT
+========================= */
 
 .upload {
     display: block;
-    text-align: center;
+    width: 100%;
+    padding: 12px;
     background: #3b82f6;
     color: white;
+    text-align: center;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
     margin-bottom: 10px;
 }
 
-.clear {
-    background: #ef4444;
-    color: white;
-    margin-top: 10px;
-}
-
-/* Filter */
-
-#filter {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    font-size: 16px;
-}
-
-/* Food Liste */
-
-.list {
-    margin-top: 10px;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.list div {
-    padding: 12px;
-    margin-bottom: 5px;
-    background: #f1f5f9;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.list div.selected {
-    background: #dbeafe;
-    border: 2px solid #3b82f6;
-}
-
-/* Track Button */
-
-#trackBtn {
-    margin-top: 10px;
-    background: #3b82f6;
-    color: white;
-}
-
-/* Report */
-
-.report {
-    margin-top: 20px;
-}
-
-.report div {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
-}
-
-/* Tracked */
-
-.tracked {
-    margin-top: 20px;
-}
-
-.tracked div {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    margin-bottom: 5px;
-    background: #f1f5f9;
-    border-radius: 10px;
-}
-
-.remove {
-    width: auto;
-    padding: 2px 8px;
-    background: none;
-    color: #999;
-}
-
-input[type="file"] {
+#fileInput {
     display: none;
 }
 
+
+/* =========================
+   FILTER
+========================= */
+
+#filter {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 12px;
+
+    font-size: 16px;
+
+    outline: none;
+
+}
+
+#filter:focus {
+
+    border-color: #3b82f6;
+
+}
+
+
+/* =========================
+   FOOD LIST
+========================= */
+
+.food-list {
+
+    margin-top: 10px;
+
+    max-height: 220px;
+
+    overflow-y: auto;
+
+}
+
+.food-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 12px;
+
+    margin-bottom: 5px;
+
+    background: #f1f5f9;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+}
+
+.food-item.selected {
+
+    background: #dbeafe;
+
+    border: 2px solid #3b82f6;
+
+}
+
+.food-energy {
+
+    font-size: 13px;
+
+    color: #64748b;
+
+}
+
+
+/* =========================
+   TRACK BUTTON
+========================= */
+
+#trackBtn {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin-top: 10px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #3b82f6;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================
+   REPORT
+========================= */
+
+.report {
+
+    margin-top: 20px;
+
+}
+
+.report-title {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+
+}
+
+.macro {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 8px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+
+}
+
+
+/* =========================
+   TRACKED FOOD
+========================= */
+
+.tracked {
+
+    margin-top: 20px;
+
+}
+
+.tracked-title {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+
+}
+
+.tracked-item {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 10px;
+
+    margin-bottom: 5px;
+
+    background: #f1f5f9;
+
+    border-radius: 10px;
+
+}
+
+.remove {
+
+    border: none;
+
+    background: none;
+
+    color: #94a3b8;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================
+   CLEAR CACHE
+========================= */
+
+#clearBtn {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin-top: 20px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #ef4444;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="app">
 
-<h1>Calorie Calculator</h1>
 
-<!-- Excel Import -->
+<h1>
+Calorie Calculator
+</h1>
 
-<label class="upload" for="fileInput">
+
+<!-- =========================
+     EXCEL IMPORT
+========================= -->
+
+<label
+    class="upload"
+    for="fileInput"
+>
     Import Excel
 </label>
 
@@ -161,283 +327,832 @@ input[type="file"] {
     accept=".xlsx,.xls"
 >
 
-<!-- Food Filter -->
+
+<!-- =========================
+     FOOD FILTER
+========================= -->
 
 <input
-    id="filter"
     type="text"
+    id="filter"
     placeholder="Food filtern..."
 >
 
-<!-- Food Liste -->
 
-<div id="foodList" class="list"></div>
+<!-- =========================
+     FOOD LIST
+========================= -->
 
-<!-- Track -->
+<div
+    id="foodList"
+    class="food-list"
+>
+</div>
+
+
+<!-- =========================
+     TRACK
+========================= -->
 
 <button id="trackBtn">
     Track Food
 </button>
 
-<!-- Macro Report -->
+
+<!-- =========================
+     MACRO REPORT
+========================= -->
 
 <div class="report">
 
-    <div>
-        <span>Energy</span>
-        <span id="energy">0 kcal</span>
+    <div class="report-title">
+        Report
     </div>
 
-    <div>
-        <span>Fat</span>
-        <span id="fat">0 g</span>
+
+    <div class="macro">
+
+        <span>
+            Energy
+        </span>
+
+        <span id="energy">
+            0 kcal
+        </span>
+
     </div>
 
-    <div>
-        <span>SFA</span>
-        <span id="sfa">0 g</span>
+
+    <div class="macro">
+
+        <span>
+            Fat
+        </span>
+
+        <span id="fat">
+            0 g
+        </span>
+
     </div>
 
-    <div>
-        <span>Carbohydrate</span>
-        <span id="carb">0 g</span>
+
+    <div class="macro">
+
+        <span>
+            SFA
+        </span>
+
+        <span id="sfa">
+            0 g
+        </span>
+
     </div>
 
-    <div>
-        <span>Sugar</span>
-        <span id="sugar">0 g</span>
+
+    <div class="macro">
+
+        <span>
+            Carbs
+        </span>
+
+        <span id="carbs">
+            0 g
+        </span>
+
     </div>
 
-    <div>
-        <span>Fiber</span>
-        <span id="fiber">0 g</span>
+
+    <div class="macro">
+
+        <span>
+            Sugar
+        </span>
+
+        <span id="sugar">
+            0 g
+        </span>
+
     </div>
 
-    <div>
-        <span>Protein</span>
-        <span id="protein">0 g</span>
+
+    <div class="macro">
+
+        <span>
+            Fiber
+        </span>
+
+        <span id="fiber">
+            0 g
+        </span>
+
+    </div>
+
+
+    <div class="macro">
+
+        <span>
+            Protein
+        </span>
+
+        <span id="protein">
+            0 g
+        </span>
+
     </div>
 
 </div>
 
-<!-- Getrackte Foods -->
+
+<!-- =========================
+     TRACKED FOOD
+========================= -->
 
 <div class="tracked">
 
-    <h3>Tracked Food</h3>
+    <div class="tracked-title">
+        Tracked Food
+    </div>
 
-    <div id="trackedList"></div>
+    <div id="trackedList">
+    </div>
 
 </div>
 
-<!-- Alles löschen -->
 
-<button id="clearBtn" class="clear">
+<!-- =========================
+     CLEAR ALL CACHE
+========================= -->
+
+<button id="clearBtn">
     Clear Cash
 </button>
 
+
 </div>
 
 
-<script src="xlsx.full.min.js"></script>
+<!-- =========================
+     XLSX LIBRARY
+     Excel-Dateien lesen
+========================= -->
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
 
 <script>
 
-let food = [
-    {
-        Food: "Apfel",
-        Energy: 52,
-        Fat: 0.2,
-        SFA: 0,
-        Carb: 14,
-        Sugar: 10,
-        Fiber: 2.4,
-        Protein: 0.3
-    },
 
-    {
-        Food: "Banane",
-        Energy: 89,
-        Fat: 0.3,
-        SFA: 0.1,
-        Carb: 23,
-        Sugar: 12,
-        Fiber: 2.6,
-        Protein: 1.1
-    },
+/* =====================================================
+   FOOD DATABASE
+===================================================== */
 
-    {
-        Food: "Vollkornbrot",
-        Energy: 265,
-        Fat: 4.2,
-        SFA: 0.6,
-        Carb: 43,
-        Sugar: 5,
-        Fiber: 7,
-        Protein: 9
-    }
-];
-
-let tracked = JSON.parse(
-    localStorage.getItem("tracked") || "[]"
-);
-
-let selected = null;
+let food = [];
 
 
-/* -------------------------
-   FOOD LIST
-------------------------- */
+/* =====================================================
+   TRACKED FOOD
+===================================================== */
 
-function renderFood() {
+let tracked = [];
 
-    const search =
-        document
-        .getElementById("filter")
-        .value
-        .toLowerCase();
 
-    const list =
-        document.getElementById("foodList");
+/* =====================================================
+   SELECTED FOOD
+===================================================== */
 
-    const result =
-        food.filter(x =>
-            x.Food
-            .toLowerCase()
-            .includes(search)
+let selectedFood = null;
+
+
+/* =====================================================
+   LOAD TRACKED FOOD
+===================================================== */
+
+try {
+
+    const saved =
+        localStorage.getItem(
+            "trackedFood"
         );
 
-    list.innerHTML = "";
+    if (saved) {
 
-    result.forEach(item => {
+        tracked =
+            JSON.parse(saved);
 
-        const div =
-            document.createElement("div");
+    }
 
-        div.textContent = item.Food;
+}
+catch (error) {
 
-        if (selected === item) {
-            div.classList.add("selected");
-        }
-
-        div.onclick = () => {
-
-            selected = item;
-
-            renderFood();
-
-        };
-
-        list.appendChild(div);
-
-    });
+    tracked = [];
 
 }
 
 
-/* -------------------------
-   TRACK FOOD
-------------------------- */
+/* =====================================================
+   EXCEL IMPORT
+===================================================== */
 
 document
-.getElementById("trackBtn")
-.onclick = function() {
+.getElementById("fileInput")
+.addEventListener(
+    "change",
+    function () {
 
-    if (!selected) {
 
-        alert("Bitte Food auswählen");
+        const file =
+            this.files[0];
 
-        return;
 
-    }
+        if (!file) {
 
-    const amount =
-        prompt(
-            "Menge in Gramm:",
-            "100"
+            return;
+
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (event) {
+
+
+                try {
+
+
+                    /* ---------------------------------
+                       EXCEL DATEI LESEN
+                    --------------------------------- */
+
+                    const workbook =
+                        XLSX.read(
+                            new Uint8Array(
+                                event.target.result
+                            ),
+                            {
+                                type: "array"
+                            }
+                        );
+
+
+                    /* ---------------------------------
+                       SHEET DMACROS HOLEN
+                    --------------------------------- */
+
+                    const sheet =
+                        workbook.Sheets[
+                            "DMacros"
+                        ];
+
+
+                    if (!sheet) {
+
+                        alert(
+                            'Fehler: Das Sheet "DMacros" wurde nicht gefunden.'
+                        );
+
+                        return;
+
+                    }
+
+
+                    /* ---------------------------------
+                       SHEET IN ARRAY UMWANDELN
+                    --------------------------------- */
+
+                    const rows =
+                        XLSX
+                        .utils
+                        .sheet_to_json(
+                            sheet
+                        );
+
+
+                    if (
+                        !rows ||
+                        rows.length === 0
+                    ) {
+
+                        alert(
+                            'Das Sheet "DMacros" ist leer.'
+                        );
+
+                        return;
+
+                    }
+
+
+                    /* ---------------------------------
+                       EXCEL DATEN ÜBERNEHMEN
+
+                       Erwartete Spalten:
+
+                       ID
+                       Food
+                       Energy
+                       Fat
+                       SFA
+                       Carbs
+                       Sugar
+                       Fiber
+                       Protein
+                    --------------------------------- */
+
+                    food =
+                        rows.map(
+                            function (row) {
+
+                                return {
+
+                                    ID:
+                                        Number(
+                                            row.ID || 0
+                                        ),
+
+                                    Food:
+                                        String(
+                                            row.Food || ""
+                                        ),
+
+                                    Energy:
+                                        Number(
+                                            row.Energy || 0
+                                        ),
+
+                                    Fat:
+                                        Number(
+                                            row.Fat || 0
+                                        ),
+
+                                    SFA:
+                                        Number(
+                                            row.SFA || 0
+                                        ),
+
+                                    Carbs:
+                                        Number(
+                                            row.Carbs || 0
+                                        ),
+
+                                    Sugar:
+                                        Number(
+                                            row.Sugar || 0
+                                        ),
+
+                                    Fiber:
+                                        Number(
+                                            row.Fiber || 0
+                                        ),
+
+                                    Protein:
+                                        Number(
+                                            row.Protein || 0
+                                        )
+
+                                };
+
+                            }
+                        );
+
+
+                    /* ---------------------------------
+                       AUSWAHL ZURÜCKSETZEN
+                    --------------------------------- */
+
+                    selectedFood =
+                        null;
+
+
+                    /* ---------------------------------
+                       FOOD LISTE NEU ZEIGEN
+                    --------------------------------- */
+
+                    renderFood();
+
+
+                    alert(
+                        food.length +
+                        " Lebensmittel erfolgreich importiert."
+                    );
+
+
+                }
+                catch (error) {
+
+
+                    alert(
+                        "Excel Import Fehler: " +
+                        error.message
+                    );
+
+
+                }
+
+            };
+
+
+        reader.readAsArrayBuffer(
+            file
         );
 
-    if (!amount) return;
 
-    const grams =
-        parseFloat(amount);
+        /* ---------------------------------
+           INPUT ZURÜCKSETZEN
 
-    if (
-        isNaN(grams) ||
-        grams <= 0
-    ) {
+           Dadurch kann dieselbe Excel-Datei
+           später erneut importiert werden.
+        --------------------------------- */
 
-        alert("Ungültige Menge");
+        this.value = "";
 
-        return;
 
     }
-
-    const factor =
-        grams / 100;
-
-    tracked.push({
-
-        Food: selected.Food,
-
-        grams: grams,
-
-        Energy:
-            selected.Energy * factor,
-
-        Fat:
-            selected.Fat * factor,
-
-        SFA:
-            selected.SFA * factor,
-
-        Carb:
-            selected.Carb * factor,
-
-        Sugar:
-            selected.Sugar * factor,
-
-        Fiber:
-            selected.Fiber * factor,
-
-        Protein:
-            selected.Protein * factor
-
-    });
-
-    save();
-
-    renderTracked();
-
-    renderReport();
-
-};
+);
 
 
-/* -------------------------
-   TRACKED FOOD
-------------------------- */
+/* =====================================================
+   FOOD LISTE RENDERN
+===================================================== */
 
-function renderTracked() {
+function renderFood() {
+
 
     const list =
-        document.getElementById(
-            "trackedList"
+        document
+        .getElementById(
+            "foodList"
         );
+
+
+    const filter =
+        document
+        .getElementById(
+            "filter"
+        )
+        .value
+        .toLowerCase();
+
+
+    /* ---------------------------------
+       FOOD FILTERN
+    --------------------------------- */
+
+    const filtered =
+        food.filter(
+            function (item) {
+
+                return item.Food
+                    .toLowerCase()
+                    .includes(
+                        filter
+                    );
+
+            }
+        );
+
+
+    /* ---------------------------------
+       LISTE LEEREN
+    --------------------------------- */
 
     list.innerHTML = "";
 
-    tracked.forEach(
-        (item, index) => {
+
+    /* ---------------------------------
+       KEINE ERGEBNISSE
+    --------------------------------- */
+
+    if (
+        filtered.length === 0
+    ) {
+
+        list.innerHTML =
+            "<div>Keine Lebensmittel gefunden</div>";
+
+        return;
+
+    }
+
+
+    /* ---------------------------------
+       FOOD ANZEIGEN
+    --------------------------------- */
+
+    filtered.forEach(
+        function (item) {
+
 
             const div =
-                document.createElement("div");
+                document
+                .createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "food-item";
+
+
+            /* ---------------------------------
+               AUSGEWÄHLTES FOOD MARKIEREN
+            --------------------------------- */
+
+            if (
+                selectedFood === item
+            ) {
+
+                div.classList.add(
+                    "selected"
+                );
+
+            }
+
 
             div.innerHTML = `
 
                 <span>
                     ${item.Food}
-                    (${item.grams} g)
+                </span>
+
+                <span class="food-energy">
+                    ${item.Energy} kcal
+                </span>
+
+            `;
+
+
+            /* ---------------------------------
+               FOOD AUSWÄHLEN
+            --------------------------------- */
+
+            div.onclick =
+                function () {
+
+
+                    selectedFood =
+                        item;
+
+
+                    renderFood();
+
+
+                };
+
+
+            list.appendChild(
+                div
+            );
+
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FILTER
+===================================================== */
+
+document
+.getElementById("filter")
+.addEventListener(
+    "input",
+    renderFood
+);
+
+
+/* =====================================================
+   TRACK FOOD
+===================================================== */
+
+document
+.getElementById("trackBtn")
+.addEventListener(
+    "click",
+    function () {
+
+
+        /* ---------------------------------
+           PRÜFEN OB FOOD AUSGEWÄHLT
+        --------------------------------- */
+
+        if (
+            !selectedFood
+        ) {
+
+            alert(
+                "Bitte zuerst ein Lebensmittel auswählen."
+            );
+
+            return;
+
+        }
+
+
+        /* ---------------------------------
+           MENGE EINGEBEN
+        --------------------------------- */
+
+        const input =
+            prompt(
+                "Menge in Gramm:",
+                "100"
+            );
+
+
+        if (
+            input === null
+        ) {
+
+            return;
+
+        }
+
+
+        const grams =
+            parseFloat(
+                input
+            );
+
+
+        /* ---------------------------------
+           MENGE PRÜFEN
+        --------------------------------- */
+
+        if (
+            isNaN(grams) ||
+            grams <= 0
+        ) {
+
+            alert(
+                "Bitte eine gültige Menge eingeben."
+            );
+
+            return;
+
+        }
+
+
+        /* ---------------------------------
+           FAKTOR BERECHNEN
+
+           Excel-Werte sind pro 100 g
+
+           Beispiel:
+
+           200 g = Faktor 2
+           50 g  = Faktor 0.5
+        --------------------------------- */
+
+        const factor =
+            grams / 100;
+
+
+        /* ---------------------------------
+           TRACKED FOOD ERSTELLEN
+        --------------------------------- */
+
+        const trackedFood = {
+
+
+            ID:
+                selectedFood.ID,
+
+
+            Food:
+                selectedFood.Food,
+
+
+            Grams:
+                grams,
+
+
+            Energy:
+                selectedFood.Energy *
+                factor,
+
+
+            Fat:
+                selectedFood.Fat *
+                factor,
+
+
+            SFA:
+                selectedFood.SFA *
+                factor,
+
+
+            Carbs:
+                selectedFood.Carbs *
+                factor,
+
+
+            Sugar:
+                selectedFood.Sugar *
+                factor,
+
+
+            Fiber:
+                selectedFood.Fiber *
+                factor,
+
+
+            Protein:
+                selectedFood.Protein *
+                factor
+
+
+        };
+
+
+        /* ---------------------------------
+           TRACKED FOOD SPEICHERN
+        --------------------------------- */
+
+        tracked.push(
+            trackedFood
+        );
+
+
+        saveTracked();
+
+
+        /* ---------------------------------
+           ANZEIGE AKTUALISIEREN
+        --------------------------------- */
+
+        renderTracked();
+
+        renderReport();
+
+
+    }
+);
+
+
+/* =====================================================
+   TRACKED FOOD RENDERN
+===================================================== */
+
+function renderTracked() {
+
+
+    const list =
+        document
+        .getElementById(
+            "trackedList"
+        );
+
+
+    list.innerHTML = "";
+
+
+    /* ---------------------------------
+       KEINE TRACKED FOODS
+    --------------------------------- */
+
+    if (
+        tracked.length === 0
+    ) {
+
+        list.innerHTML =
+            "<div>Noch keine Lebensmittel getrackt</div>";
+
+        return;
+
+    }
+
+
+    /* ---------------------------------
+       TRACKED FOODS ANZEIGEN
+    --------------------------------- */
+
+    tracked.forEach(
+        function (
+            item,
+            index
+        ) {
+
+
+            const div =
+                document
+                .createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "tracked-item";
+
+
+            div.innerHTML = `
+
+                <span>
+                    ${item.Food}
+                    (${item.Grams} g)
                 </span>
 
                 <button
@@ -449,7 +1164,11 @@ function renderTracked() {
 
             `;
 
-            list.appendChild(div);
+
+            list.appendChild(
+                div
+            );
+
 
         }
     );
@@ -457,238 +1176,305 @@ function renderTracked() {
 }
 
 
-function removeTracked(index) {
+/* =====================================================
+   TRACKED FOOD LÖSCHEN
+===================================================== */
 
-    tracked.splice(index, 1);
+function removeTracked(
+    index
+) {
 
-    save();
+
+    tracked.splice(
+        index,
+        1
+    );
+
+
+    saveTracked();
+
 
     renderTracked();
 
     renderReport();
 
-}
-
-
-/* -------------------------
-   MACRO REPORT
-------------------------- */
-
-function renderReport() {
-
-    const total = {
-
-        Energy: 0,
-        Fat: 0,
-        SFA: 0,
-        Carb: 0,
-        Sugar: 0,
-        Fiber: 0,
-        Protein: 0
-
-    };
-
-    tracked.forEach(item => {
-
-        Object.keys(total)
-        .forEach(key => {
-
-            total[key] +=
-                item[key] || 0;
-
-        });
-
-    });
-
-
-    document
-    .getElementById("energy")
-    .textContent =
-        Math.round(total.Energy)
-        + " kcal";
-
-
-    document
-    .getElementById("fat")
-    .textContent =
-        total.Fat.toFixed(1)
-        + " g";
-
-
-    document
-    .getElementById("sfa")
-    .textContent =
-        total.SFA.toFixed(1)
-        + " g";
-
-
-    document
-    .getElementById("carb")
-    .textContent =
-        total.Carb.toFixed(1)
-        + " g";
-
-
-    document
-    .getElementById("sugar")
-    .textContent =
-        total.Sugar.toFixed(1)
-        + " g";
-
-
-    document
-    .getElementById("fiber")
-    .textContent =
-        total.Fiber.toFixed(1)
-        + " g";
-
-
-    document
-    .getElementById("protein")
-    .textContent =
-        total.Protein.toFixed(1)
-        + " g";
 
 }
 
 
-/* -------------------------
-   EXCEL IMPORT
-------------------------- */
+/* =====================================================
+   TRACKED FOOD SPEICHERN
+===================================================== */
 
-document
-.getElementById("fileInput")
-.onchange = function() {
+function saveTracked() {
 
-    const file =
-        this.files[0];
-
-    if (!file) return;
-
-    const reader =
-        new FileReader();
-
-    reader.onload =
-        function(e) {
-
-            const workbook =
-                XLSX.read(
-                    e.target.result,
-                    {
-                        type: "array"
-                    }
-                );
-
-            const sheet =
-                workbook.Sheets[
-                    workbook.SheetNames[0]
-                ];
-
-            food =
-                XLSX
-                .utils
-                .sheet_to_json(sheet)
-                .map(row => ({
-
-                    Food:
-                        row.Food,
-
-                    Energy:
-                        Number(
-                            row.Energy ||
-                            row.Energie ||
-                            0
-                        ),
-
-                    Fat:
-                        Number(row.Fat || 0),
-
-                    SFA:
-                        Number(row.SFA || 0),
-
-                    Carb:
-                        Number(
-                            row.Carb || 0
-                        ),
-
-                    Sugar:
-                        Number(
-                            row.Sugar || 0
-                        ),
-
-                    Fiber:
-                        Number(
-                            row.Fiber || 0
-                        ),
-
-                    Protein:
-                        Number(
-                            row.Protein || 0
-                        )
-
-                }));
-
-            renderFood();
-
-        };
-
-    reader.readAsArrayBuffer(file);
-
-};
-
-
-/* -------------------------
-   FILTER
-------------------------- */
-
-document
-.getElementById("filter")
-.oninput =
-    renderFood;
-
-
-/* -------------------------
-   CLEAR CACHE
-------------------------- */
-
-document
-.getElementById("clearBtn")
-.onclick = function() {
-
-    if (
-        confirm(
-            "Alle App-Daten löschen?"
-        )
-    ) {
-
-        localStorage.clear();
-
-        tracked = [];
-
-        location.reload();
-
-    }
-
-};
-
-
-/* -------------------------
-   SAVE
-------------------------- */
-
-function save() {
 
     localStorage.setItem(
-        "tracked",
-        JSON.stringify(tracked)
+
+        "trackedFood",
+
+        JSON.stringify(
+            tracked
+        )
+
     );
 
 }
 
 
-/* -------------------------
-   START
-------------------------- */
+/* =====================================================
+   MACRO REPORT
+===================================================== */
+
+function renderReport() {
+
+
+    /* ---------------------------------
+       SUMMEN
+    --------------------------------- */
+
+    let total = {
+
+
+        Energy: 0,
+
+
+        Fat: 0,
+
+
+        SFA: 0,
+
+
+        Carbs: 0,
+
+
+        Sugar: 0,
+
+
+        Fiber: 0,
+
+
+        Protein: 0
+
+
+    };
+
+
+    /* ---------------------------------
+       ALLE TRACKED FOODS ADDIEREN
+    --------------------------------- */
+
+    tracked.forEach(
+        function (item) {
+
+
+            total.Energy +=
+                item.Energy || 0;
+
+
+            total.Fat +=
+                item.Fat || 0;
+
+
+            total.SFA +=
+                item.SFA || 0;
+
+
+            total.Carbs +=
+                item.Carbs || 0;
+
+
+            total.Sugar +=
+                item.Sugar || 0;
+
+
+            total.Fiber +=
+                item.Fiber || 0;
+
+
+            total.Protein +=
+                item.Protein || 0;
+
+
+        }
+    );
+
+
+    /* ---------------------------------
+       REPORT ANZEIGEN
+    --------------------------------- */
+
+    document
+    .getElementById(
+        "energy"
+    )
+    .textContent =
+
+        Math.round(
+            total.Energy
+        ) +
+
+        " kcal";
+
+
+    document
+    .getElementById(
+        "fat"
+    )
+    .textContent =
+
+        total.Fat.toFixed(
+            1
+        ) +
+
+        " g";
+
+
+    document
+    .getElementById(
+        "sfa"
+    )
+    .textContent =
+
+        total.SFA.toFixed(
+            1
+        ) +
+
+        " g";
+
+
+    document
+    .getElementById(
+        "carbs"
+    )
+    .textContent =
+
+        total.Carbs.toFixed(
+            1
+        ) +
+
+        " g";
+
+
+    document
+    .getElementById(
+        "sugar"
+    )
+    .textContent =
+
+        total.Sugar.toFixed(
+            1
+        ) +
+
+        " g";
+
+
+    document
+    .getElementById(
+        "fiber"
+    )
+    .textContent =
+
+        total.Fiber.toFixed(
+            1
+        ) +
+
+        " g";
+
+
+    document
+    .getElementById(
+        "protein"
+    )
+    .textContent =
+
+        total.Protein.toFixed(
+            1
+        ) +
+
+        " g";
+
+
+}
+
+
+/* =====================================================
+   CLEAR CASH
+
+   LÖSCHT ALLE LOKAL GESPEICHERTEN DATEN
+===================================================== */
+
+document
+.getElementById(
+    "clearBtn"
+)
+.addEventListener(
+    "click",
+    function () {
+
+
+        const confirmDelete =
+            confirm(
+                "Soll der gesamte lokale App-Cache gelöscht werden?"
+            );
+
+
+        if (
+            !confirmDelete
+        ) {
+
+            return;
+
+        }
+
+
+        /* ---------------------------------
+           LOCAL STORAGE LÖSCHEN
+        --------------------------------- */
+
+        localStorage.clear();
+
+
+        /* ---------------------------------
+           TRACKED FOOD LEEREN
+        --------------------------------- */
+
+        tracked = [];
+
+
+        /* ---------------------------------
+           FOOD DATENBANK LEEREN
+        --------------------------------- */
+
+        food = [];
+
+
+        /* ---------------------------------
+           AUSWAHL ENTFERNEN
+        --------------------------------- */
+
+        selectedFood =
+            null;
+
+
+        /* ---------------------------------
+           ANZEIGEN AKTUALISIEREN
+        --------------------------------- */
+
+        renderFood();
+
+        renderTracked();
+
+        renderReport();
+
+
+    }
+);
+
+
+/* =====================================================
+   INITIALISIERUNG
+===================================================== */
 
 renderFood();
 
@@ -697,22 +1483,28 @@ renderTracked();
 renderReport();
 
 
-/* -------------------------
+/* =====================================================
    SERVICE WORKER
-------------------------- */
+===================================================== */
 
 if (
     "serviceWorker"
     in navigator
 ) {
 
+
     navigator
     .serviceWorker
-    .register("sw.js");
+    .register(
+        "./sw.js"
+    );
+
 
 }
 
 </script>
 
+
 </body>
+
 </html>
