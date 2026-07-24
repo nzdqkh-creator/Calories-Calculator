@@ -1,5 +1,4 @@
-const CACHE_NAME = "calorie-calculator-v1";
-
+const CACHE_NAME = "calorie-calculator-v2";
 const FILES = [
     "./",
     "./index.html",
